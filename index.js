@@ -92,10 +92,33 @@ function updateProgressBar() {
     currentTimeEl.textContent = `${formatTime(currentTime / 60)}:${formatTime(currentTime % 60)}`;
 }
 
+let isDragging = false;
+
+function startDrag(e) {
+    isDragging = true;
+    setProgressBar(e);
+}
+
+function endDrag() {
+    isDragging = false;
+}
+
+function dragProgress(e) {
+    if (!isDragging) return;
+    setProgressBar(e);
+}
+
 function setProgressBar(e) {
     const width = playerProgress.clientWidth;
-    const clickX = e.offsetX;
-    music.currentTime = (clickX / width) * music.duration;
+    let clickX;
+    if (e.type.includes('touch')) {
+        const touch = e.touches[0];
+        clickX = touch.clientX - playerProgress.getBoundingClientRect().left;
+    } else {
+        clickX = e.offsetX;
+    }
+    const progressPercent = Math.max(0, Math.min(clickX / width, 1)); // Clamp entre 0 et 1
+    music.currentTime = progressPercent * music.duration;
 }
 
 playBtn.addEventListener('click', togglePlay);
@@ -104,5 +127,16 @@ nextBtn.addEventListener('click', () => changeMusic(1));
 music.addEventListener('ended', () => changeMusic(1));
 music.addEventListener('timeupdate', updateProgressBar);
 playerProgress.addEventListener('click', setProgressBar);
+
+// Événements pour la souris
+playerProgress.addEventListener('mousedown', startDrag);
+document.addEventListener('mouseup', endDrag);
+document.addEventListener('mousemove', dragProgress);
+
+// Événements pour le tactile
+playerProgress.addEventListener('touchstart', startDrag);
+document.addEventListener('touchend', endDrag);
+document.addEventListener('touchmove', dragProgress);
+
 
 loadMusic(songs[musicIndex]);
