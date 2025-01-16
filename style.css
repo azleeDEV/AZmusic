@@ -154,3 +154,27 @@ footer {
     font-weight: 600;
     padding-top: 60px;
 }
+
+@media screen and (max-width: 500px) {
+    .container{
+        width: 360px;
+    }
+
+    .player-controls {
+        left: 108px;
+    }
+
+    .player-img img.active {
+        position: absolute !important;
+        left: -17px !important; 
+    }
+
+    h2{
+        font-size: 24px;
+        margin: 0;
+    }
+
+    h3 {
+        font-size: 17px;
+    }
+}
